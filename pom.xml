@@ -6,26 +6,37 @@
 
     <groupId>xyz.ufactions</groupId>
     <artifactId>UPermissions</artifactId>
-    <version>1.8.8</version>
+    <version>latest</version>
 
     <repositories>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <!-- This adds the Spigot Maven repository to the build -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
-            <groupId>xyz.ufactions</groupId>
-            <artifactId>megabukkit</artifactId>
-            <version>1.8.8-R0.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
             <version>1.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.8.8-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>xyz.ufactions.prolib</groupId>
+            <artifactId>ProLib</artifactId>
+            <version>latest</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -43,20 +54,15 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!-- Jar Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.1</version>
-                <configuration>
-                    <outputDirectory>F:\Library</outputDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9</version>
-            </plugin>
+<!--            &lt;!&ndash; Jar Plugin &ndash;&gt;-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <version>2.3.1</version>-->
+<!--                <configuration>-->
+<!--                    <outputDirectory>F:\Library</outputDirectory>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>

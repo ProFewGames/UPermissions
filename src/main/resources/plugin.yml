@@ -1,15 +1,7 @@
-main: xyz.ufactions.upermissions.Main
+main: xyz.ufactions.upermissions.UPermissions
 name: UPermissions
-version: 1.8.8
+version: latest
 author: ProFewGames
 description: A simple permissions plugin
 softdepend:
   - vault
-commands:
-  upermissions:
-    description: Main Permissions Command
-    aliases:
-      - uperms
-      - perms
-      - permissions
-      - pex
