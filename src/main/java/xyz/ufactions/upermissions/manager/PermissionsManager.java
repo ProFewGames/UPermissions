@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.ufactions.prolib.libs.Callback;
-import xyz.ufactions.prolib.libs.F;
 import xyz.ufactions.prolib.libs.UtilTime;
 import xyz.ufactions.upermissions.UPermissions;
 import xyz.ufactions.upermissions.data.Group;
@@ -22,6 +21,8 @@ public class PermissionsManager {
     private final List<Group> groups = new ArrayList<>();
     private final Map<UUID, User> users = new HashMap<>();
     private final Map<UUID, PermissionAttachment> data = new HashMap<>();
+
+    private final Set<UUID> lock = new HashSet<>();
 
     private final UPermissions plugin;
     private final GroupsRepository groupsRepository;
@@ -50,21 +51,31 @@ public class PermissionsManager {
 
     public void reload(Player player) {
         unload(player);
-        load(user -> injectPermissions(player), player.getUniqueId(), true);
+        load(user -> injectPermissions(player), player.getUniqueId());
     }
 
-    private void load(final Callback<User> callback, final UUID uuid, final boolean cache) {
+    private void load(final Callback<User> callback, final UUID uuid) {
+        if (users.containsKey(uuid)) {
+            plugin.debug(uuid.toString() + " already loaded! Try reload() or relogging.");
+            return;
+        }
+        if (lock.contains(uuid)) {
+            plugin.debug("Loading of " + uuid.toString() + " already in progress!");
+            return;
+        }
+        if (Bukkit.getPlayer(uuid) != null)
+            users.put(uuid, new User(uuid, Bukkit.getPlayer(uuid) == null ? "" : Bukkit.getPlayer(uuid).getName()));
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 long epoch = System.currentTimeMillis();
-                plugin.debug("Loading " + uuid.toString() + ", Caching " + cache + "...");
+                plugin.debug("Loading " + uuid.toString());
+                lock.add(uuid);
                 User user;
                 user = usersRepository.getUser(uuid);
-                if (cache)
-                    if (!users.containsKey(uuid))
-                        users.put(uuid, user);
+                if (Bukkit.getPlayer(uuid) != null)
+                    users.put(uuid, user);
                 final List<String> groupNames = usersRepository.getGroups(uuid);
                 final List<Group> groups = new ArrayList<>();
                 for (String name : groupNames) {
@@ -89,6 +100,7 @@ public class PermissionsManager {
                     callback.run(user);
                 Player player = Bukkit.getPlayer(uuid);
                 if (player != null) usersRepository.updateUsername(player);
+                lock.remove(uuid);
                 plugin.debug("Loading of " + uuid.toString() + " took " + UtilTime.convertString(System.currentTimeMillis() - epoch, 3, UtilTime.TimeUnit.FIT) + ".");
             }
         }.runTaskAsynchronously(plugin);
@@ -194,8 +206,8 @@ public class PermissionsManager {
     }
 
     public User getUser(Player player) {
-        if (!users.containsKey(player.getUniqueId()))
-            player.kickPlayer(F.error(plugin.getName(), "Failed to fetch user, try connecting again or contact administration."));
+        if (!users.containsKey(player.getUniqueId())) load(user -> {
+        }, player.getUniqueId());
         return users.get(player.getUniqueId());
     }
 
@@ -208,7 +220,7 @@ public class PermissionsManager {
 
             @Override
             public void run() {
-                load(callback, uuid, false);
+                load(callback, uuid);
             }
         }.runTaskAsynchronously(plugin);
     }
@@ -463,7 +475,7 @@ public class PermissionsManager {
 
     public void setPrefix(Group group, String prefix) {
         group.setPrefix(prefix);
-        new BukkitRunnable(){
+        new BukkitRunnable() {
 
             @Override
             public void run() {

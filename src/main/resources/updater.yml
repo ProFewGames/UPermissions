@@ -1,0 +1,17 @@
+########################################################################
+#                                   UPDATER                            #
+########################################################################
+# Should we enable auto plugin updater, this feature is useful for networks;
+# or multiple servers
+enable: false
+
+# The URL Where the update JAR is located
+url: http://yourwebsite.com/update/updatableJar.jar
+
+# If the URL is password protected this will be the login information
+# if none is applicable leave empty
+username: ''
+
+# If the URL is password protected this will be the login information
+# if none is applicable leave empty
+password: ''

@@ -1,7 +1,9 @@
 main: xyz.ufactions.upermissions.UPermissions
 name: UPermissions
-version: latest
+version: 1.00
 author: ProFewGames
 description: A simple permissions plugin
+depend:
+  - ProLib
 softdepend:
   - vault
